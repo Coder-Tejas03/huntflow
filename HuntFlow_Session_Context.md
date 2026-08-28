@@ -31,7 +31,6 @@
 Applied, Online Assessment, Interview Round 1, Interview Round 2, Interview Round 3, Offer, Rejected, Withdrawn
 
 ### UI
-- Single Page Application (SPA) — one index.html, JS shows/hides sections
 - 3 pages: Dashboard, Applications, Study Log
 - Top nav bar, plain CSS only (no Bootstrap/Tailwind), calm grays + one accent color
 - Responsive: desktop + mobile via CSS media queries
@@ -127,7 +126,7 @@ huntflow/
 │   ├── css/style.css
 │   └── js/
 │       ├── api.js                 <- Fetch wrappers
-│       ├── app.js                 <- SPA logic + navigation
+│       ├── app.js                 <- logic + navigation
 │       ├── dashboard.js
 │       ├── applications.js
 │       └── studyLog.js
@@ -147,7 +146,7 @@ huntflow/
 | Day 5 | Applications API — 5 endpoints, test with Postman/curl |
 | Day 6 | Interview Notes API + Study Logs API |
 | Day 7 | Stats endpoint, SQL COUNT/GROUP BY, LEFT JOINs |
-| Day 8 | api.js fetch wrappers, SPA navigation, app.js state |
+| Day 8 | api.js fetch wrappers, page navigation, app.js state |
 | Day 9 | Dashboard page — stat cards, Chart.js bar chart, follow-up list |
 | Day 10 | Applications page — list, add, edit, delete, filter, search |
 | Day 11 | Study Log page, Interview Notes in detail view, polish + responsive |
