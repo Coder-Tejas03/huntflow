@@ -34,7 +34,7 @@
 |---|---|---|---|
 | Day 1 | JS Revision | `let`/`const`, arrow functions, objects, destructuring, `map`/`filter`/`reduce`/`find`/`forEach`, `async`/`await`, `fetch()` | ✅ COMPLETE |
 | Day 2 | Project Setup | `npm init`, Express server, static HTML/CSS, Git + GitHub first push | ✅ COMPLETE |
-| Day 3 | PostgreSQL Basics | Create DB, write `schema.sql`, CRUD SQL practice in `psql` | ⬜ |
+| Day 3 | PostgreSQL Basics | Create DB, write `schema.sql`, CRUD SQL practice in `psql` | ✅ COMPLETE |
 | Day 4 | Node ↔ PostgreSQL | `pg` Pool, `dotenv`, `.env`, parameterized queries | ⬜ |
 | Day 5 | Applications API | 5 endpoints, input validation, test with curl/Postman | ⬜ |
 | Day 6 | Interview Notes + Study Logs API | 4 more endpoints, foreign keys in practice | ⬜ |
@@ -51,16 +51,16 @@
 
 > This section describes Tejas as he actually is, not as he was described at the start. Update after each day.
 
-**Last updated:** End of Day 1 (2026-08-29)
+**Last updated:** End of Day 3 (2026-08-30)
 
 ### Identity
 - **Name:** Tejas Gosavi
 - **OS:** Ubuntu 24.04.4 LTS
 - **Learning style:** Builds real things, understands best when he can run code and see output. Very self-driven — iterates on his own without being pushed.
 
-### Skill Assessment (Updated After Day 1)
+### Skill Assessment (Updated After Day 3)
 
-| Skill | Pre-Day-1 Assessment | Post-Day-1 Reality |
+| Skill | Pre-Day-1 Assessment | Post-Day-3 Reality |
 |---|---|---|
 | `let`/`const`/`var` | Rusty | **Solid.** Understood immediately, applied correctly. |
 | Arrow functions | Rusty | **Solid.** Got implicit return, single-param shorthand. |
@@ -70,8 +70,8 @@
 | Method chaining | Unknown | **Surprising strength.** Asked the right question and solved it himself. |
 | `async`/`await` + `fetch()` | Conceptual, no practice | **Good.** Correct structure, double-await, try/catch included. |
 | Self-debugging | Unknown | **Strong instinct.** Fixed all errors independently before asking for help. |
-| SQL | Has written JOINs before | Not tested yet. |
-| Node.js / Express | Not started | Not started. |
+| SQL & Schema Design | Has written JOINs before | **Solid.** Grasped DB vs Table mental models, primary/foreign keys, `ON DELETE CASCADE` (no orphan records), `CHECK` constraints, and all CRUD operations (`INSERT ... RETURNING *`, `SELECT` with `WHERE/ORDER BY/LIMIT`, `UPDATE`, `DELETE`). Mastered SQL quotes & comma syntax rules. |
+| Node.js / Express | Not started | **Basic.** Server setup, static file serving (`express.static`), npm scripts. |
 
 ### Behavioral Patterns (Observed)
 - ✅ **Self-corrects before asking** — rarely waits for help, tries things first.
@@ -262,16 +262,105 @@ app.listen(3000, () => {
 
 ---
 
-### ⬜ DAY 3 — 2026-08-30 | PostgreSQL Basics
+### ✅ DAY 3 — 2026-08-30 | PostgreSQL Basics
 
-> **To be filled at end of Day 3.**
+**Duration:** ~3 hours
+**Focus:** PostgreSQL concepts, `psql` shell, schema design with constraints, foreign keys, and SQL CRUD operations.
 
-**Planned Goals:**
-1. Intro to relational DBs — tables, rows, columns, keys, constraints
-2. Connect to PostgreSQL with `psql` as user `postgres`
-3. `CREATE DATABASE huntflow;` and `\c huntflow` to connect
-4. Write and execute `db/schema.sql` (all 3 tables from spec)
-5. Practice 5+ INSERT/SELECT/UPDATE/DELETE queries manually in psql
+#### Goals vs Achieved
+
+| Goal | Achieved? | Notes |
+|---|---|---|
+| Relational DB mental model | ✅ | Understood tables, rows, columns, primary/foreign keys, and constraints |
+| Connect to PostgreSQL with `psql` | ✅ | Learned meta-commands (`\l`, `\c`, `\dt`, `\q`) vs SQL queries |
+| `CREATE DATABASE huntflow;` | ✅ | Created DB and switched context with `\c huntflow` |
+| Write `db/schema.sql` (3 tables) | ✅ | All 3 tables created (`applications`, `interview_notes`, `study_logs`) with `CHECK`, `NOT NULL`, `DEFAULT`, and `ON DELETE CASCADE` |
+| Execute `schema.sql` in `psql` | ✅ | `\i db/schema.sql` ran cleanly with 0 errors |
+| Practice INSERT queries | ✅ | Used `RETURNING *`, tested default values and intentional `CHECK` violation |
+| Practice SELECT queries | ✅ | Projections, `WHERE`, multi-condition `AND`, `ORDER BY`, `LIMIT` |
+| Practice UPDATE queries | ✅ | Single & multi-column updates with `CURRENT_TIMESTAMP` |
+| Practice DELETE & CASCADE | ✅ | Deleted parent application and verified 0 ghost rows in `interview_notes` |
+| Git commit | ✅ | Committed `44a5a02` (`db/schema.sql`) |
+
+#### Final File State
+
+**`db/schema.sql`:**
+```sql
+DROP TABLE IF EXISTS interview_notes;
+DROP TABLE IF EXISTS applications;
+DROP TABLE IF EXISTS study_logs;
+
+CREATE TABLE applications(
+    id SERIAL PRIMARY KEY,
+    company_name VARCHAR(255) NOT NULL,
+    role VARCHAR(255) NOT NULL,
+    platform VARCHAR(255) NOT NULL CHECK (platform IN ('NxtWave', 'Naukri', 'LinkedIn', 'Indeed', 'Wellfound', 'Instahyre', 'Company Website', 'Referral', 'Other')),
+    job_link TEXT,
+    date_applied DATE NOT NULL DEFAULT CURRENT_DATE,
+    status VARCHAR(30) NOT NULL DEFAULT 'Applied' CHECK (status IN ('Applied', 'Online Assessment', 'Mock Interview', 'Interview Round 1', 'Interview Round 2', 'Interview Round 3', 'Offer', 'Rejected', 'Withdrawn')),
+    salary_offered VARCHAR(100),
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE interview_notes(
+    id SERIAL PRIMARY KEY,
+    application_id INTEGER NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
+    round_number INTEGER NOT NULL,
+    note_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    questions_asked TEXT NOT NULL,
+    my_answers TEXT,
+    to_revise TEXT,
+    how_it_went TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE study_logs(
+    id SERIAL PRIMARY KEY,
+    log_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    topic VARCHAR(255) NOT NULL,
+    hours_spent DECIMAL(4,1) NOT NULL CHECK (hours_spent > 0),
+    what_i_learned TEXT,
+    project_worked_on VARCHAR(255),
+    confidence_level INTEGER CHECK (confidence_level BETWEEN 1 AND 5),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+#### SQL Concepts Learned
+
+| Concept | Understood? | Notes |
+|---|---|---|
+| Tables, Rows, Columns | ✅ | Clear mental model: Database = Cabinet, Table = Drawer, Row = Record, Column = Field |
+| Primary Key (`SERIAL PRIMARY KEY`) | ✅ | Auto-incrementing unique identifier |
+| Foreign Key + `ON DELETE CASCADE` | ✅ | Student coined the term "no ghosts in the application" — verified live |
+| `CHECK` constraints | ✅ | Proved constraint enforcement by attempting invalid platform input |
+| `psql` meta-commands vs SQL | ✅ | Backslash commands (`\l`, `\c`, `\i`, `\dt`, `\q`) vs SQL statements ending in `;` |
+| `RETURNING *` | ✅ | Learned how Postgres immediately returns created/updated records |
+| SQL Quotes (`'string'` vs `"ident"`) | ✅ | Self-debugged double-quote vs single-quote error in `WHERE` clause |
+| SQL Operators (`=` vs `===`) | ✅ | Self-corrected JavaScript equality to SQL single `=` |
+| SQL Comma rules in `UPDATE` | ✅ | Grasped the "English list" rule: commas separate assignments, never trail before `WHERE` |
+
+#### Errors Made (Learning Points)
+
+| Error | Root Cause | Self-Fixed? |
+|---|---|---|
+| `/l` in `psql` | Used forward slash instead of backslash `\l` | ✅ Yes |
+| `WHERE status = "Applied"` | Used double quotes (identifiers) instead of single quotes (strings) | ✅ Yes |
+| `WHERE status == 'Applied'` | Used JavaScript equality `==` instead of SQL `=` | ✅ Yes |
+| Trailing comma before `WHERE` in `UPDATE` | Treated comma as statement separator rather than list item separator | ✅ Explained & mastered |
+| Repeating `SET` in multi-column `UPDATE` | Repeated keyword `SET` instead of comma-separated column list | ✅ Explained & mastered |
+
+#### Assessment
+- **Verdict:** Highly productive session. Student mastered database schema definition, referential integrity, and SQL CRUD queries with strong intuitive understanding.
+- **Strongest area:** Conceptual understanding of relational models & cascade behaviors ("no ghosts").
+- **Watch area for Day 4:** When transitioning to Node.js parameterized queries (`$1`, `$2`), remember that SQL queries passed to `pool.query()` follow these exact same SQL rules.
+
+#### Tutor Notes for Day 4
+- Open Day 4 by connecting Day 2 and Day 3: "On Day 2 we built the server. On Day 3 we built the database. Today we build the bridge connecting the two using the `pg` library."
+- Agenda: Install `pg` & `dotenv` → create `src/config/db.js` with `Pool` → set up `.env` with `DATABASE_URL` → write first parameterized query in Node.js → test reading from `applications`.
+- Emphasize parameterized queries (`$1`, `$2`) to prevent SQL injection.
 
 ---
 
@@ -329,4 +418,5 @@ app.listen(3000, () => {
 
 ---
 
-*Last updated: 2026-08-30 | End of Day 2*
+*Last updated: 2026-08-30 | End of Day 3*
+
