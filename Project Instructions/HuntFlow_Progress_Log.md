@@ -33,7 +33,7 @@
 | Day | Focus Area | Key Deliverables | Status |
 |---|---|---|---|
 | Day 1 | JS Revision | `let`/`const`, arrow functions, objects, destructuring, `map`/`filter`/`reduce`/`find`/`forEach`, `async`/`await`, `fetch()` | ✅ COMPLETE |
-| Day 2 | Project Setup | `npm init`, Express server, static HTML/CSS, Git + GitHub first push | ⬜ |
+| Day 2 | Project Setup | `npm init`, Express server, static HTML/CSS, Git + GitHub first push | ✅ COMPLETE |
 | Day 3 | PostgreSQL Basics | Create DB, write `schema.sql`, CRUD SQL practice in `psql` | ⬜ |
 | Day 4 | Node ↔ PostgreSQL | `pg` Pool, `dotenv`, `.env`, parameterized queries | ⬜ |
 | Day 5 | Applications API | 5 endpoints, input validation, test with curl/Postman | ⬜ |
@@ -173,23 +173,92 @@ async function getUsers() {
 
 ---
 
-### ⬜ DAY 2 — 2026-08-29 | Project Setup
+### ✅ DAY 2 — 2026-08-29/30 | Project Setup
 
-> **To be filled at end of Day 2.**
+**Duration:** Split across two sub-sessions (Day 2 start + Day 3 morning due to lost chat)
+**Focus:** Express server setup, static HTML/CSS, Git + GitHub
 
-**Planned Goals:**
-1. `npm init` in `huntflow/` root — understand `package.json`
-2. `npm install express` — understand what `node_modules` is, why we `.gitignore` it
-3. Create `server.js` — Express app, `app.listen(3000)`, test `GET /` route
-4. Run `node server.js`, visit `localhost:3000` in browser
-5. Create `public/index.html` — basic 3-section SPA structure (nav + 3 page sections)
-6. Create `public/css/style.css` — CSS variables for colors, basic nav styling, Flexbox layout
-7. `app.use(express.static('public'))` — serve static files from Express
-8. Verify HTML page loads at `localhost:3000`
-9. `git init`, create `.gitignore` (exclude `node_modules/` and `.env`), first commit
-10. Push to GitHub repo `huntflow` on `main` branch
+> **Note for next agent:** Day 2 was split across two IDE sessions. The first session (Day 2 evening) completed npm init through index.html. The second session (Day 3 morning, new chat — previous chat was lost due to IDE timeout) completed style.css and the final GitHub push. All Day 2 goals are fully achieved.
 
-**End-of-day target:** Running Express server + basic HTML page live on localhost + all code on GitHub.
+#### Goals vs Achieved
+
+| Goal | Achieved? | Notes |
+|---|---|---|
+| `npm init` | ✅ | `package.json` created correctly |
+| `npm install express` | ✅ | Express `^5.2.1` installed, `node_modules/` present |
+| Create `server.js` | ✅ | `app.use(express.static('public'))` + `app.listen(3000)` |
+| Run server + test in browser | ✅ | `node server.js` → `localhost:3000` confirmed working |
+| Create `public/index.html` | ✅ | 3-section SPA: nav + Dashboard/Applications/Study Log sections |
+| Create `public/css/style.css` | ✅ | Full CSS — variables, reset, Flexbox nav, section cards |
+| `app.use(express.static('public'))` | ✅ | Student wrote this independently after analogy explanation |
+| Verify HTML at `localhost:3000` | ✅ | Confirmed loading with all styles applied |
+| `.gitignore` | ✅ | `node_modules/` and `.env` excluded |
+| Commit + GitHub push | ✅ | Commit `c6efbba` pushed to `origin/main` |
+
+#### Final File State
+
+**`server.js`:**
+```js
+const express = require('express');
+const app = express();
+
+app.use(express.static('public'));
+
+app.listen(3000, () => {
+    console.log("Starting the server on port 3000");
+});
+```
+
+**`public/index.html`:** 3-section SPA with `<nav>`, `<main>`, and 3 `<section>` elements. Nav links call `showPage('dashboard')` etc (JS not yet wired — that's Day 8). Stylesheet linked at `./css/style.css`.
+
+**`public/css/style.css` — Full CSS written:**
+- `:root` block with 5 CSS custom properties (`--bg`, `--surface`, `--accent`, `--text`, `--muted`)
+- Universal reset (`* { margin, padding, box-sizing }`)
+- `body` with font-family + CSS variable references
+- `nav` — Flexbox, `justify-content: space-between`, `align-items: center`, indigo accent background
+- `nav h1` — white, 1.4rem (descendant selector, not global `h1`)
+- `ul` — `list-style: none`, `display: flex`, `gap: 2rem`
+- `nav a` — `text-decoration: none`, `color: white`, `font-weight: 500`
+- `nav a:hover` — `opacity: 0.75`
+- `main` — `padding: 2rem`
+- `section` — white card with `border-radius`, `box-shadow`, `padding`
+
+#### CSS Concepts Learned
+
+| Concept | Understood? | Notes |
+|---|---|---|
+| CSS custom properties (`:root`, `--var`, `var()`) | ✅ | Wrote the `:root` block independently after seeing the pattern |
+| Universal reset | ✅ | Understood why `margin/padding: 0` removes browser defaults |
+| Flexbox (`display: flex`, `justify-content`, `align-items`, `gap`) | ✅ | Immediately saw the nav transform into horizontal layout |
+| Descendant selectors (`nav h1`, `nav a`) | ✅ | Understood class-vs-semantic distinction, self-corrected `h1` → `nav h1` |
+| Pseudo-classes (`:hover`, `:root`) | ✅ | New concept — understood purpose clearly |
+| `box-shadow` shorthand | ✅ | Explained and given directly (polish concept) |
+| `express.static()` + `app.use()` | ✅ | Student wrote it independently after the "security guard" analogy |
+
+#### Behavioral Patterns (New Observations)
+- ✅ **Proactive semicolons** — added semicolon to `express.static` line on own, no prompt needed. Habit forming.
+- ✅ **Quick concept transfer** — corrected `h1` → `nav h1` immediately on first explanation of descendant selectors.
+- ✅ **Context-aware questions** — asked about class-based vs element-selector approach, showing genuine understanding of what was different from his prior knowledge.
+- ✅ **IDE fluency** — ran all 4 git commands independently in correct order without guidance.
+
+#### Errors Made
+
+| Error | Root Cause | Self-Fixed? |
+|---|---|---|
+| `h1 { color: white }` too broad | Didn't think about future h1 elements outside nav | ✅ Fixed to `nav h1` immediately on explanation |
+
+#### Assessment
+- **Verdict:** Smooth session. All 10 Day 2 goals hit. Student absorbed Express middleware, CSS architecture, and Git workflow with minimal friction.
+- **Strongest area:** Independent execution — wrote `express.static`, the `:root` block, and all nav CSS rulesets himself.
+- **CSS prior knowledge:** Was class-based, now understands semantic/descendant selectors and when to use which.
+
+#### Tutor Notes for Day 3
+- No remediation needed. Student is fully ready for PostgreSQL.
+- Day 3 agenda: `psql` intro → create `huntflow` database → write `db/schema.sql` (all 3 tables) → practice INSERT/SELECT/UPDATE/DELETE in psql.
+- Open Day 3 by bridging: "Yesterday you built the server. Today you're building the database it will eventually talk to."
+- Student has written JOINs before — expect faster pace on SELECT queries. Push toward WHERE, LIMIT, ORDER BY.
+- The `showPage()` JS function in `index.html` is a forward stub — it's intentionally unwired until Day 8. Do NOT address it on Day 3.
+- Git workflow is now fluent — no need to re-explain `add/commit/push`.
 
 ---
 
@@ -260,4 +329,4 @@ async function getUsers() {
 
 ---
 
-*Last updated: 2026-08-29 | End of Day 1*
+*Last updated: 2026-08-30 | End of Day 2*
