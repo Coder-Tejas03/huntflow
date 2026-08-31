@@ -35,7 +35,7 @@
 | Day 1 | JS Revision | `let`/`const`, arrow functions, objects, destructuring, `map`/`filter`/`reduce`/`find`/`forEach`, `async`/`await`, `fetch()` | ✅ COMPLETE |
 | Day 2 | Project Setup | `npm init`, Express server, static HTML/CSS, Git + GitHub first push | ✅ COMPLETE |
 | Day 3 | PostgreSQL Basics | Create DB, write `schema.sql`, CRUD SQL practice in `psql` | ✅ COMPLETE |
-| Day 4 | Node ↔ PostgreSQL | `pg` Pool, `dotenv`, `.env`, parameterized queries | ⬜ |
+| Day 4 | Node ↔ PostgreSQL | `pg` Pool, `dotenv`, `.env`, parameterized queries | ✅ COMPLETE |
 | Day 5 | Applications API | 5 endpoints, input validation, test with curl/Postman | ⬜ |
 | Day 6 | Interview Notes + Study Logs API | 4 more endpoints, foreign keys in practice | ⬜ |
 | Day 7 | Stats Endpoint | `COUNT`, `GROUP BY`, `LEFT JOIN`, stats formula queries | ⬜ |
@@ -364,9 +364,58 @@ CREATE TABLE study_logs(
 
 ---
 
-### ⬜ DAY 4 — 2026-08-31 | Node.js ↔ PostgreSQL
+### ✅ DAY 4 — 2026-08-31 | Node.js ↔ PostgreSQL
 
-> **To be filled at end of Day 4.**
+**Duration:** ~1.5 hours
+**Focus:** Connecting Node.js Express backend to PostgreSQL using `pg` (node-postgres), environment variables with `dotenv`, connection pooling mental model, SQL injection defense, and parameterized queries.
+
+#### Goals vs Achieved
+
+| Goal | Achieved? | Notes |
+|---|---|---|
+| Install `pg` & `dotenv` | ✅ | Packages installed in `package.json` |
+| Set up `.env` & verify `.gitignore` | ✅ | `DATABASE_URL` and `PORT` defined; `.env` excluded from git |
+| Connection Pooling mental model | ✅ | Understood "Waiter Pool" analogy vs per-request connections |
+| Create `src/config/db.js` | ✅ | Created modular `pg.Pool` instance connected to `process.env.DATABASE_URL` |
+| Understand SQL Injection & Defense | ✅ | Grasped why string interpolation is vulnerable and how parameterized queries (`$1`, `$2`) treat input as literal data |
+| Test live Node.js ↔ PostgreSQL query | ✅ | Successfully fetched rows from `applications` table created on Day 3 |
+| Understand query result shapes & 0-row handling | ✅ | Analyzed `result.rows` array, `rowCount`, non-guaranteed SQL default ordering, and empty array `[]` on missing IDs |
+| Git commit & push | ✅ | Committed Day 4 code |
+
+#### Files Created / Modified
+
+- `src/config/db.js` — Database connection pool configuration
+- `.env` — Environment configuration for local PostgreSQL
+- `package.json` — Added `pg` and `dotenv` dependencies
+- `test-db.js` — Test script for validating live database queries
+
+#### Concepts Learned
+
+| Concept | Understood? | Notes |
+|---|---|---|
+| Environment Variables (`dotenv`) | ✅ | Secure configuration outside version control |
+| Connection Pool (`pg.Pool`) | ✅ | Reusable database connections to eliminate connection overhead |
+| Parameterized Queries (`$1`, `$2`) | ✅ | Safe passing of query arguments to prevent SQL injection |
+| Query Result Structure | ✅ | `result.rows` as an array of JS objects, `result.rowCount` |
+| SQL Default Ordering | ✅ | Learned why SQL tables are unordered bags of data unless `ORDER BY` is specified |
+| Missing Record Handling | ✅ | Observed that non-existent IDs return `[]` without erroring |
+
+#### Errors Made (Learning Points)
+
+| Error | Root Cause | Self-Fixed? |
+|---|---|---|
+| `mkdir: cannot create directory 'src/config'` | Missing parent directory flag | ✅ Fixed with `mkdir -p` |
+| `Cannot find module '.src/config/db'` | Typo in relative path `./src/config/db` | ✅ Self-fixed |
+| `password authentication failed for user "postgres"` | Default peer authentication on Ubuntu Linux | ✅ Fixed by setting password via `ALTER USER postgres PASSWORD 'postgres';` |
+
+#### Assessment
+- **Verdict:** Flawless transition from SQL basics to Node.js database integration.
+- **Strongest area:** Deep curiosity and deduction — independently observed and questioned array format, SQL physical row ordering, and missing record return shapes.
+- **Watch area for Day 5:** When building Express routes and controllers, remember to map `req.params`, `req.query`, and `req.body` into parameterized query values arrays.
+
+#### Tutor Notes for Day 5
+- Open Day 5 by connecting Day 4 and Day 5: "Yesterday you built the database connection module. Today we build the full Applications REST API (all 5 CRUD endpoints) on top of it!"
+- Agenda: Create `src/routes/applications.js` and `src/controllers/applicationsController.js` → implement `GET /`, `GET /:id`, `POST /`, `PUT /:id`, `DELETE /:id` → input validation → test with curl / REST client.
 
 ---
 
