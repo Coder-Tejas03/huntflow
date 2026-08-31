@@ -1,8 +1,17 @@
 const express = require('express');
 const app = express();
 
+// Built in middleware for parsing JSON bodies
+app.use(express.json());
+
+// Serve static files from 'public'
 app.use(express.static('public'));
 
-app.listen(3000, () => {
-    console.log("Starting the server on port 3000");
+// Import and mount routes
+const applicationsRouter = require('./src/routes/applications');
+app.use('/api/v1/applications', applicationsRouter);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Starting the server on port ${PORT}`);
 });

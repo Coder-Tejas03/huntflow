@@ -35,8 +35,7 @@
 | Day 1 | JS Revision | `let`/`const`, arrow functions, objects, destructuring, `map`/`filter`/`reduce`/`find`/`forEach`, `async`/`await`, `fetch()` | ✅ COMPLETE |
 | Day 2 | Project Setup | `npm init`, Express server, static HTML/CSS, Git + GitHub first push | ✅ COMPLETE |
 | Day 3 | PostgreSQL Basics | Create DB, write `schema.sql`, CRUD SQL practice in `psql` | ✅ COMPLETE |
-| Day 4 | Node ↔ PostgreSQL | `pg` Pool, `dotenv`, `.env`, parameterized queries | ✅ COMPLETE |
-| Day 5 | Applications API | 5 endpoints, input validation, test with curl/Postman | ⬜ |
+| Day 5 | Applications API | 5 endpoints, input validation, test with curl/Postman | ✅ COMPLETE |
 | Day 6 | Interview Notes + Study Logs API | 4 more endpoints, foreign keys in practice | ⬜ |
 | Day 7 | Stats Endpoint | `COUNT`, `GROUP BY`, `LEFT JOIN`, stats formula queries | ⬜ |
 | Day 8 | Frontend Architecture | `api.js` fetch wrappers, SPA navigation, `app.js` state | ⬜ |
@@ -51,35 +50,34 @@
 
 > This section describes Tejas as he actually is, not as he was described at the start. Update after each day.
 
-**Last updated:** End of Day 3 (2026-08-30)
+**Last updated:** End of Day 5 (2026-08-31)
 
 ### Identity
 - **Name:** Tejas Gosavi
 - **OS:** Ubuntu 24.04.4 LTS
 - **Learning style:** Builds real things, understands best when he can run code and see output. Very self-driven — iterates on his own without being pushed.
 
-### Skill Assessment (Updated After Day 3)
+### Skill Assessment (Updated After Day 5)
 
-| Skill | Pre-Day-1 Assessment | Post-Day-3 Reality |
+| Skill | Pre-Day-1 Assessment | Post-Day-5 Reality |
 |---|---|---|
 | `let`/`const`/`var` | Rusty | **Solid.** Understood immediately, applied correctly. |
 | Arrow functions | Rusty | **Solid.** Got implicit return, single-param shorthand. |
-| Template literals | Rusty | **Good.** Self-corrected backtick vs quote error without help. |
-| Objects + destructuring | Rusty | **Good.** Minor variable naming confusion, self-resolved. |
+| Template literals | Rusty | **Solid.** Mastered dynamic string building and SQL ILIKE interpolation (`%${search}%`). |
+| Objects + destructuring | Rusty | **Strong.** Destructures `req.params`, `req.query`, and `req.body` effortlessly. |
 | Array methods (`map/filter/reduce/find/forEach`) | Needed revision | **Strong.** All 5 correct on first attempt after seeing syntax. Invented `filter().map()` chaining independently. |
 | Method chaining | Unknown | **Surprising strength.** Asked the right question and solved it himself. |
 | `async`/`await` + `fetch()` | Conceptual, no practice | **Good.** Correct structure, double-await, try/catch included. |
-| Self-debugging | Unknown | **Strong instinct.** Fixed all errors independently before asking for help. |
-| SQL & Schema Design | Has written JOINs before | **Solid.** Grasped DB vs Table mental models, primary/foreign keys, `ON DELETE CASCADE` (no orphan records), `CHECK` constraints, and all CRUD operations (`INSERT ... RETURNING *`, `SELECT` with `WHERE/ORDER BY/LIMIT`, `UPDATE`, `DELETE`). Mastered SQL quotes & comma syntax rules. |
-| Node.js / Express | Not started | **Basic.** Server setup, static file serving (`express.static`), npm scripts. |
+| Self-debugging | Unknown | **Exceptional.** Self-isolated and resolved typos in SQL function names, route parameter prefixes (`/:id`), and dynamic template strings. |
+| SQL & Schema Design | Has written JOINs before | **Solid.** Grasped DB vs Table mental models, primary/foreign keys, `ON DELETE CASCADE` (no orphan records), `CHECK` constraints, and all CRUD operations (`INSERT ... RETURNING *`, `SELECT` with `WHERE/ORDER BY/LIMIT`, `UPDATE` with `COALESCE`, `DELETE`). |
+| Node.js / Express & REST APIs | Not started | **Strong.** Modular architecture (`routes/` + `controllers/` + `config/`), `express.json()` middleware, request parsing (`req.query`, `req.params`, `req.body`), HTTP status codes (`200`, `201`, `400`, `404`, `500`), and dynamic parameterized query construction. |
 
 ### Behavioral Patterns (Observed)
-- ✅ **Self-corrects before asking** — rarely waits for help, tries things first.
-- ✅ **Asks curious "what if" questions** — e.g. invented the `filter().map()` question himself — shows genuine curiosity, not just task completion.
-- ✅ **Archives his work** — created `backup.js` to save commented history. Organized mindset.
-- ✅ **Iterates on output format** — not satisfied with `Leanne Graham Sincere@april.biz`, fixed the comma. Attention to detail.
-- ⚠️ **Occasionally names variables wrong** — confused `company` (destructured string) with `job` (the object). Watch for this when destructuring + mutation happen together.
-- ⚠️ **Light on semicolons** — inconsistent. Not a bug risk in Node, but worth building the habit.
+- ✅ **Deep architectural curiosity** — Traced the complete lifecycle of request data across 5 distinct scenarios and deduced dynamic query building array mechanics independently.
+- ✅ **Self-corrects before asking** — rarely waits for help, tries things first, and inspects error stacks/terminal headers.
+- ✅ **Asks curious "what if" questions** — e.g. questioned SQL semicolon rules, missing record return shapes, and array counter mechanics.
+- ✅ **Archives & tests thoroughly** — rigorously tests both happy paths and edge cases (400 validation, 404 missing ID).
+- ⚠️ **Route parameter prefix watch** — remember Express route params require leading colon (`/:id`).
 
 ### Teaching Calibration (Agent: read this before planning your session)
 - **Pace:** Faster than the plan assumed. Day 1 content absorbed in ~1 working session. Do not slow down unnecessarily.
@@ -419,9 +417,56 @@ CREATE TABLE study_logs(
 
 ---
 
-### ⬜ DAY 5 — 2026-09-01 | Applications API (CRUD)
+### ✅ DAY 5 — 2026-08-31 | Applications API (CRUD)
 
-> **To be filled at end of Day 5.**
+**Duration:** ~2.5 hours
+**Focus:** Building the complete Applications CRUD REST API with Express Router, controller modularization, query parameter filtering, route parameters, JSON body parsing, input validation, and HTTP status codes.
+
+#### Goals vs Achieved
+
+| Goal | Achieved? | Notes |
+|---|---|---|
+| Architecture Setup (`express.json()`, `routes/`, `controllers/`) | ✅ | Clean separation of concerns (Server $\rightarrow$ Route $\rightarrow$ Controller $\rightarrow$ Database) |
+| `GET /api/v1/applications` (List + Filters) | ✅ | Dynamic query generation supporting `?status`, `?platform`, and `?search` with `ILIKE` |
+| `GET /api/v1/applications/:id` (Get Single) | ✅ | Extracted `req.params.id`, handled `404 Not Found` for missing IDs |
+| `POST /api/v1/applications` (Create) | ✅ | Validated required fields (`400 Bad Request`), executed `INSERT ... RETURNING *`, returned `201 Created` |
+| `PUT /api/v1/applications/:id` (Update) | ✅ | Partial updates using `COALESCE`, refreshed `updated_at = CURRENT_TIMESTAMP`, handled `404` |
+| `DELETE /api/v1/applications/:id` (Delete) | ✅ | Executed parameterized `DELETE`, verified cascade integrity and `404` on subsequent delete |
+| REST API Testing via `curl` | ✅ | Tested all 5 endpoints for both happy paths and edge cases (400, 404, 500) |
+
+#### Files Created / Modified
+
+- `server.js` — Mounted `express.json()` and `/api/v1/applications` router
+- `src/routes/applications.js` — Express Router mapping HTTP verbs (`GET`, `POST`, `PUT`, `DELETE`) to controller methods
+- `src/controllers/applicationsController.js` — Complete CRUD business logic with parameterized SQL queries and error handling
+
+#### Key Concepts Learned
+
+| Concept | Understood? | Notes |
+|---|---|---|
+| Router vs Controller Pattern | ✅ | Routes define endpoints & verbs; Controllers handle business logic and DB communication |
+| `express.json()` Middleware | ✅ | Acts as the JSON translator, parsing raw request streams into `req.body` |
+| Data Sources (`query`, `params`, `body`) | ✅ | `req.query` for search/filter query strings, `req.params` for URL route variables, `req.body` for payloads |
+| Dynamic SQL Query Construction | ✅ | Dynamically assembled `WHERE` clauses with `conditions.join(' AND ')` and dynamic `$n` indices |
+| HTTP Status Codes | ✅ | `200 OK`, `201 Created`, `400 Bad Request`, `404 Not Found`, `500 Internal Server Error` |
+| Partial Updates with `COALESCE` | ✅ | `COALESCE($1, column)` preserves existing database values when fields are omitted in `PUT` |
+
+#### Errors Made (Learning Points)
+
+| Error | Root Cause | Self-Fixed? |
+|---|---|---|
+| `%{search}%` in template literal | Omitted `$` in `${search}`, searching for literal `%{search}%` | ✅ Yes |
+| `function coalsesce(...) does not exist` | Typo in SQL keyword `COALESCE` | ✅ Yes |
+| `Cannot DELETE /api/v1/applications/5` (HTML 404) | Missing colon in route definition (`/id` instead of `/:id`) | ✅ Yes |
+
+#### Assessment
+- **Verdict:** Mastered REST API architecture and Express CRUD development with excellent debugging skills.
+- **Strongest area:** Deep conceptual curiosity — deduced dynamic query formation across 5 test cases and understood parameter array mechanics.
+- **Watch area for Day 6:** When building Interview Notes and Study Logs APIs, apply the same route-controller pattern and remember the foreign key linkage (`application_id`).
+
+#### Tutor Notes for Day 6
+- Open Day 6 by connecting Applications with Interview Notes & Study Logs: "Yesterday you built the parent Applications API. Today we build the child Interview Notes API (foreign key relationship) and the standalone Study Logs API!"
+- Agenda: Create `src/routes/interviewNotes.js` & `src/controllers/interviewNotesController.js` $\rightarrow$ create `src/routes/studyLogs.js` & `src/controllers/studyLogsController.js` $\rightarrow$ test all 8 new endpoints with `curl`.
 
 ---
 
@@ -467,5 +512,5 @@ CREATE TABLE study_logs(
 
 ---
 
-*Last updated: 2026-08-30 | End of Day 3*
+*Last updated: 2026-08-31 | End of Day 5*
 
