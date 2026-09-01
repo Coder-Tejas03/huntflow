@@ -143,7 +143,7 @@ const updateApplication = async (req, res) => {
         const result = await pool.query(query, values);
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ error: "application not found" });
+            return res.status(404).json({ error: "Application not found" });
         }
 
         res.json(result.rows[0]);
