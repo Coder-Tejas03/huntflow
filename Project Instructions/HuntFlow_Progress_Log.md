@@ -37,7 +37,7 @@
 | Day 3 | PostgreSQL Basics | Create DB, write `schema.sql`, CRUD SQL practice in `psql` | ✅ COMPLETE |
 | Day 5 | Applications API | 5 endpoints, input validation, test with curl/Postman | ✅ COMPLETE |
 | Day 6 | Interview Notes + Study Logs API | 4 more endpoints, foreign keys in practice | ✅ COMPLETE |
-| Day 7 | Stats Endpoint | `COUNT`, `GROUP BY`, `LEFT JOIN`, stats formula queries | ⬜ |
+| Day 7 | Stats Endpoint | `COUNT`, `GROUP BY`, `LEFT JOIN`, stats formula queries | ✅ COMPLETE |
 | Day 8 | Frontend Architecture | `api.js` fetch wrappers, SPA navigation, `app.js` state | ⬜ |
 | Day 9 | Dashboard Page | Stat cards, Chart.js bar chart, follow-up list, activity timeline | ⬜ |
 | Day 10 | Applications Page | List, add, edit, delete, filter, search, follow-up badge | ⬜ |
@@ -543,9 +543,76 @@ CREATE TABLE study_logs(
 
 ---
 
-### ⬜ DAY 7 — 2026-09-03 | Stats Endpoint + SQL Aggregations
+### ✅ DAY 7 — 2026-09-01 | Stats Endpoint + SQL Aggregations
 
-> **To be filled at end of Day 7.**
+**Duration:** ~2 hours
+**Focus:** Building the final `GET /api/v1/stats` endpoint. Taught `COUNT(*)`, `COUNT(column)`, `GROUP BY`, `AS` aliasing, `COUNT(*) FILTER (WHERE ...)`, all three JOIN types, the anti-join (`LEFT JOIN + IS NULL`) pattern, PostgreSQL date arithmetic with `INTERVAL`, and `Promise.all()` for parallel async queries in Node.js.
+
+#### Goals vs Achieved
+
+| Goal | Achieved? | Notes |
+|---|---|---|
+| Teach `COUNT(*)` vs `COUNT(column)` | ✅ | Student predicted different results correctly before running; understood NULL exclusion |
+| Teach `GROUP BY` | ✅ | Ran status + platform breakdowns; independently tested on `salary_offered` without prompting |
+| Teach `COUNT(*) FILTER (WHERE ...)` | ✅ | Ran conditional count query; self-caught double-quote error and fixed to single quotes |
+| Teach `LEFT JOIN`, `INNER JOIN`, `RIGHT JOIN` | ✅ | Student independently ran all 3 join types in `psql` to compare results — saw `INNER = 0 rows`, `RIGHT = 0 rows`, `LEFT = 2 rows` with `NULL` note_id; articulated the distinction perfectly |
+| Teach anti-join (`LEFT JOIN + IS NULL`) | ✅ | Live-tested by backdating Google's `date_applied` — Google appeared in `pendingFollowUps` immediately |
+| Design the stats JSON response shape | ✅ | Planned all 5 blocks before writing a single line of Node.js |
+| Define rate formulas (response/interview/offer) | ✅ | Understood the math and the division-by-zero risk |
+| Create `src/controllers/statsController.js` | ✅ | Wrote all 5 SQL queries, `Promise.all()`, `parseInt()` coercions, rate math with `.toFixed(1)`, and `total > 0` guard independently |
+| Create `src/routes/stats.js` | ✅ | Clean 7-line router file |
+| Mount stats router in `server.js` | ✅ | 2 lines added correctly |
+| Test `GET /api/v1/stats` with `curl \| jq` | ✅ | All 5 response blocks verified correct against live DB data |
+| Test `pendingFollowUps` anti-join live | ✅ | Updated `date_applied` in `psql`, re-ran curl, confirmed Google appeared |
+| Git commit + push to GitHub | ✅ | Commit `220b5b8` — 3 files changed, 122 insertions |
+
+#### Files Created / Modified
+
+- `src/controllers/statsController.js` — **[NEW]** 1 function `getStats`: 5 parallel SQL queries via `Promise.all()`, `parseInt` coercions, rate formula math, division-by-zero guard, `res.status(200).json()`
+- `src/routes/stats.js` — **[NEW]** 1 route: `GET /stats` → `getStats`
+- `server.js` — **[MODIFIED]** Mounted `statsRouter` under `/api/v1`
+
+#### Key Concepts Learned
+
+| Concept | Understood? | Notes |
+|---|---|---|
+| `COUNT(*)` vs `COUNT(column)` | ✅ | `COUNT(*)` = every row; `COUNT(column)` = only non-NULL values in that column |
+| `GROUP BY` | ✅ | "Sort into piles then count each pile" — correctly applied to `status` and `platform`; independently tested on `salary_offered` |
+| `AS` aliasing | ✅ | Student explained: "our desired name for that grouping or column we're building" — maps directly to `result.rows[0].total` in Node.js |
+| `COUNT(*) FILTER (WHERE ...)` | ✅ | PostgreSQL-specific conditional aggregation — cleaner than `CASE WHEN` |
+| `INNER JOIN` | ✅ | Only returns rows where both sides have a match |
+| `LEFT JOIN` | ✅ | All rows from left table retained; unmatched right-side = `NULL` |
+| `RIGHT JOIN` | ✅ | Correctly identified as redundant with `LEFT JOIN` (swap table order); rarely used in production |
+| Anti-join pattern (`LEFT JOIN + IS NULL`) | ✅ | "Find students without a partner" — applied live to find applications with no interview notes |
+| `CURRENT_DATE - INTERVAL '7 days'` | ✅ | PostgreSQL relative date arithmetic |
+| `Promise.all()` | ✅ | Fires all 5 DB queries simultaneously instead of sequentially — understood the performance benefit |
+| `COUNT(*)` returns string in `pg` | ✅ | Used `parseInt(row.total, 10)` on every count field |
+| Rate formula + division-by-zero guard | ✅ | `total > 0 ? parseFloat((value / total * 100).toFixed(1)) : 0` |
+
+#### Errors Made (Learning Points)
+
+| Error | Root Cause | Self-Fixed? |
+|---|---|---|
+| `WHERE status = "Offer"` in `FILTER` | Used double quotes (identifiers) instead of single quotes (strings) | ✅ Yes |
+| `'Offer` and `'Rejected` — unclosed string literals in `overviewQuery` | Forgot closing single quote before `)` | ✅ Yes (after tutor spotted it) |
+
+#### Behavioral Patterns (New Observations)
+- ✅ **Proactive experiment** — independently ran `GROUP BY salary_offered` without being asked; correctly interpreted the `NULL` row in the output.
+- ✅ **Scientific method** — independently ran all 3 JOIN types (`INNER`, `RIGHT`, `LEFT`) side-by-side to verify his mental model through comparison.
+- ✅ **Proactive error improvement** — upgraded `console.error("Error in getStats")` to `console.error("Error in getStats: ", err.message)` without being told; good debugging instinct.
+- ✅ **Strong architectural ownership** — assembled the full `Promise.all()` + rate math + JSON response block correctly on first attempt with only a structural description, no code provided.
+
+#### Assessment
+- **Verdict:** Day 7 was the cleanest session of the marathon. Student absorbed 3 new SQL concepts (COUNT, GROUP BY, JOINs) and 2 Node.js patterns (Promise.all, parseInt coercion) with zero architectural mistakes. The backend is now 100% complete — all 14 endpoints built, tested, and pushed.
+- **Strongest area:** JOIN comprehension — independently verified all 3 types live in psql, then applied the anti-join pattern correctly in the controller.
+- **Error profile:** Only 2 errors today, both quote-related (SQL string vs identifier syntax), both self-caught or self-fixed. Consistent with prior sessions.
+
+#### Tutor Notes for Day 8
+- Open Day 8 by connecting the full picture: "The backend is done. Today we wire up the frontend — `public/js/api.js` fetch wrappers for all 14 endpoints, and SPA navigation so clicking the nav actually switches pages."
+- Agenda: Create `public/js/api.js` (all 14 `fetch()` wrapper functions) → create `public/js/app.js` (SPA state + `showPage()` function) → wire up nav links in `index.html` → test navigation in the browser.
+- Remind student that Day 2's `showPage()` in `index.html` is a forward stub that we deliberately left unwired — today is the day we wire it.
+- `api.js` patterns will map directly to his Day 1 `async/await + fetch()` revision — connect that dot explicitly at the start.
+- Student may try to build UI too early — keep Day 8 focused on the JS architecture layer; UI comes Day 9+.
 
 ---
 
@@ -579,5 +646,5 @@ CREATE TABLE study_logs(
 
 ---
 
-*Last updated: 2026-09-01 | End of Day 6*
+*Last updated: 2026-09-01 | End of Day 7*
 
