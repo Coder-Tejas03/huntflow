@@ -36,7 +36,7 @@
 | Day 2 | Project Setup | `npm init`, Express server, static HTML/CSS, Git + GitHub first push | ✅ COMPLETE |
 | Day 3 | PostgreSQL Basics | Create DB, write `schema.sql`, CRUD SQL practice in `psql` | ✅ COMPLETE |
 | Day 5 | Applications API | 5 endpoints, input validation, test with curl/Postman | ✅ COMPLETE |
-| Day 6 | Interview Notes + Study Logs API | 4 more endpoints, foreign keys in practice | ⬜ |
+| Day 6 | Interview Notes + Study Logs API | 4 more endpoints, foreign keys in practice | ✅ COMPLETE |
 | Day 7 | Stats Endpoint | `COUNT`, `GROUP BY`, `LEFT JOIN`, stats formula queries | ⬜ |
 | Day 8 | Frontend Architecture | `api.js` fetch wrappers, SPA navigation, `app.js` state | ⬜ |
 | Day 9 | Dashboard Page | Stat cards, Chart.js bar chart, follow-up list, activity timeline | ⬜ |
@@ -470,9 +470,76 @@ CREATE TABLE study_logs(
 
 ---
 
-### ⬜ DAY 6 — 2026-09-02 | Interview Notes + Study Logs API
+### ✅ DAY 6 — 2026-09-01 | Interview Notes + Study Logs API
 
-> **To be filled at end of Day 6.**
+**Duration:** ~8 hours
+**Focus:** Building the Interview Notes API (child resource with foreign key) and the Study Logs API (standalone resource). 8 new endpoints, modular route/controller architecture, REST URL design for parent-child relationships, and comprehensive `curl` testing.
+
+#### Goals vs Achieved
+
+| Goal | Achieved? | Notes |
+|---|---|---|
+| Mental model: Parent-Child REST URL design | ✅ | Understood `/applications/:id/notes` (scoped to parent) vs `/notes/:id` (direct by note ID) |
+| `GET /api/v1/applications/:id/notes` | ✅ | Parameterized query on `interview_notes` where `application_id = $1`, ordered by `round_number ASC` |
+| `POST /api/v1/applications/:id/notes` | ✅ | `application_id` from `req.params`, note fields from `req.body`, `INSERT ... RETURNING *`, returns `201` |
+| `PUT /api/v1/notes/:id` | ✅ | Full `COALESCE` partial-update pattern, `WHERE id = $7`, `404` handling |
+| `DELETE /api/v1/notes/:id` | ✅ | Parameterized `DELETE ... RETURNING *`, `404` on missing note |
+| `GET /api/v1/study-logs` | ✅ | Optional `?date` filter on `log_date`, `ORDER BY log_date DESC, created_at DESC` |
+| `POST /api/v1/study-logs` | ✅ | Required fields (`topic`, `hours_spent`) validated, server-managed `created_at` excluded from user input |
+| `PUT /api/v1/study-logs/:id` | ✅ | `COALESCE` partial updates, correct `$7` -> `id` param index after removing `created_at` |
+| `DELETE /api/v1/study-logs/:id` | ✅ | Clean delete with confirmation message |
+| Route files + `module.exports` for both routers | ✅ | Correct nested paths in router (`/applications/:id/notes`, `/notes/:id`, `/study-logs`, `/study-logs/:id`) |
+| Mount both routers in `server.js` at `/api/v1` | ✅ | Both routers mounted cleanly alongside existing applications router |
+| Git commit + push to GitHub | ✅ | Commit `5ff1b0e` — 6 files changed, 296 insertions |
+
+#### Files Created / Modified
+
+- `src/controllers/interviewNotesController.js` — 4 functions: `getNotesByApplicationId`, `createNote`, `updateNote`, `deleteNote`
+- `src/controllers/studyLogsController.js` — 4 functions: `getAllStudyLogs`, `createStudyLog`, `updateStudyLog`, `deleteStudyLog`
+- `src/routes/interviewNotes.js` — Router mapping 4 HTTP verb/path combinations to controller methods
+- `src/routes/studyLogs.js` — Router mapping 4 HTTP verb/path combinations to controller methods
+- `server.js` — Mounted both new routers under `/api/v1`
+
+#### Key Concepts Learned
+
+| Concept | Understood? | Notes |
+|---|---|---|
+| Parent-Child REST URL design | ✅ | `/applications/:id/notes` addresses the parent's collection; `/notes/:id` addresses the child directly. `req.params.id` means different things in each route. |
+| `INSERT` never has a `WHERE` clause | ✅ | Foreign key (`application_id`) is a column in the `INSERT` list, not a `WHERE` filter — student initially wrote `WHERE application_id = $7` on an `INSERT`. |
+| Empty array `[]` is not a `404` | ✅ | `GET /applications/99999/notes` returns `200 []`. An application can legitimately have 0 notes. Only missing resources deserve `404`. |
+| Server-managed fields (`created_at`) must never come from `req.body` | ✅ | Auto-timestamp columns are PostgreSQL's responsibility. Accepting them from clients is a data integrity risk. |
+| `||` vs `&&` in validation guards | ✅ | `!a && !b` only catches when both are missing. `!a || !b` correctly catches when either is missing. |
+| `return` before error responses | ✅ | Without `return`, Express would attempt to send two responses and crash with `ERR_HTTP_HEADERS_SENT`. |
+| Consistent JSON error shape | ✅ | All error responses wrapped in `{ error: "..." }` object, not plain strings. |
+| Debugging with correct resource ID | ✅ | PUT/DELETE tests failed with `404` because note ID `1` didn't exist — the created note was ID `2`. Student recognised this independently with one hint. |
+
+#### Errors Made (Learning Points)
+
+| Error | Root Cause | Self-Fixed? |
+|---|---|---|
+| `SELECT interview_notes FROM applications WHERE id = $1` | Confused table name with column name; queried wrong table entirely | ❌ Caught by tutor |
+| `404` when 0 notes returned | Misapplied "missing record" rule to empty collections | ❌ Caught by tutor |
+| `INSERT INTO interview_notes ... WHERE application_id = $7` | Applied `WHERE` clause to an `INSERT` statement — SQL syntax error | ❌ Caught by tutor |
+| `!round_number && !questions_asked` | Used `&&` instead of `||` in validation guard | ❌ Caught by tutor |
+| `query = ...` without `const` | Forgot `const` declaration — variable leaked to global scope | ❌ Caught by tutor |
+| `const deleteNote = async (res, req) =>` | Classic `res`/`req` parameter swap — entire function was broken | ❌ Caught by tutor |
+| `res.status(404).json("Note not found")` | Plain string instead of `{ error: "..." }` JSON object | ❌ Caught by tutor |
+| `conditions.push('date = $...')` | Wrong column name — column is `log_date`, not `date` | ❌ Caught by tutor |
+| `created_at` accepted from `req.body` | Exposing server-managed field to client override | ❌ Caught by tutor |
+| `const { route } = require('./interviewNotes')` | Accidental phantom import left in `studyLogs.js` | ❌ Caught by tutor |
+| `PUT /notes/1` returned `404` | Note was created with ID `2` not `1` — used wrong ID in test | ✅ Self-resolved with one hint |
+
+#### Assessment
+- **Verdict:** Strongest session of the marathon. Student wrote complete, multi-function controllers independently for the first time, applying the route-controller-database pattern with only guidance, no direct code provision.
+- **Strongest area:** Autonomous implementation — picked up the Study Logs API and wrote all 4 functions, the route file, and server mount without prompting. The CRUD pattern is now fully internalised.
+- **Watch area for Day 7:** SQL aggregation functions (`COUNT`, `GROUP BY`) and `LEFT JOIN` for the stats endpoint are new territory. Use strong analogies first before writing any SQL.
+
+#### Tutor Notes for Day 7
+- Open Day 7 by connecting the full picture: "We now have 13 of 14 API endpoints. Today we build the last one — the Stats endpoint — which powers the entire Dashboard."
+- Agenda: Build `GET /api/v1/stats` → teach `COUNT(*)`, `GROUP BY`, response rate / interview rate / offer rate formulas → `LEFT JOIN` for pending follow-ups (applications with no notes, applied > 7 days ago).
+- Student has never used `COUNT`, `GROUP BY`, or `LEFT JOIN` in Node.js context — explain in SQL first via `psql`, then move to Node.
+- The pending follow-up query (LEFT JOIN + NULL check + date filter) will be the hardest concept of the day. Budget extra time.
+- Create `src/routes/stats.js` and `src/controllers/statsController.js`, mount at `/api/v1/stats` in `server.js`.
 
 ---
 
@@ -512,5 +579,5 @@ CREATE TABLE study_logs(
 
 ---
 
-*Last updated: 2026-08-31 | End of Day 5*
+*Last updated: 2026-09-01 | End of Day 6*
 
