@@ -17,6 +17,9 @@ app.use('/api/v1', interviewNotesRouter);
 const studyLogsRouter = require('./src/routes/studyLogs');
 app.use('/api/v1', studyLogsRouter);
 
+const statsRouter = require('./src/routes/stats');
+app.use('/api/v1', statsRouter);
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Starting the server on port ${PORT}`);
