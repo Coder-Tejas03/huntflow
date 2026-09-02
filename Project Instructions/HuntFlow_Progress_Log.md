@@ -38,7 +38,7 @@
 | Day 5 | Applications API | 5 endpoints, input validation, test with curl/Postman | ✅ COMPLETE |
 | Day 6 | Interview Notes + Study Logs API | 4 more endpoints, foreign keys in practice | ✅ COMPLETE |
 | Day 7 | Stats Endpoint | `COUNT`, `GROUP BY`, `LEFT JOIN`, stats formula queries | ✅ COMPLETE |
-| Day 8 | Frontend Architecture | `api.js` fetch wrappers, SPA navigation, `app.js` state | ⬜ |
+| Day 8 | Frontend Architecture | `api.js` fetch wrappers, SPA navigation, `app.js` state | ✅ COMPLETE |
 | Day 9 | Dashboard Page | Stat cards, Chart.js bar chart, follow-up list, activity timeline | ⬜ |
 | Day 10 | Applications Page | List, add, edit, delete, filter, search, follow-up badge | ⬜ |
 | Day 11 | Study Log + Interview Notes + Polish | Study log page, notes in detail view, empty/loading states, responsive | ⬜ |
@@ -616,9 +616,143 @@ CREATE TABLE study_logs(
 
 ---
 
-### ⬜ DAY 8 — 2026-09-04 | Frontend Architecture + API Layer
+### ✅ DAY 8 — 2026-09-02 | Frontend Architecture + API Layer
 
-> **To be filled at end of Day 8.**
+**Duration:** ~8 hours
+**Focus:** Building the complete frontend JavaScript architecture — 14 `fetch()` wrapper functions in `api.js`, SPA state management and navigation in `app.js`, wiring `index.html`. Verified live in browser with real database data.
+
+#### Goals vs Achieved
+
+| Goal | Achieved? | Notes |
+|---|---|---|
+| Mental model: 3-file frontend architecture (`index.html`, `api.js`, `app.js`) | ✅ | Understood "kitchen/floor manager/dining room" analogy immediately |
+| Create `public/js/api.js` with all 14 fetch wrappers | ✅ | All 14 functions written independently after first pattern was shown |
+| `getApplications(filters)` — `URLSearchParams` query string construction | ✅ | Learned `URLSearchParams`, truthy check on empty string, double guard pattern |
+| `getNotesByApplication(applicationId)`, `createNote`, `updateNote`, `deleteNote` | ✅ | Written independently; 2 bugs caught and fixed |
+| `getStudyLogs(filters)`, `createStudyLog`, `updateStudyLog`, `deleteStudyLog`, `getStats` | ✅ | Pattern fully internalised; 2 subtle bugs caught and self-fixed |
+| Create `public/js/app.js` — state variables | ✅ | `currentPage`, `applications`, `studylogs`, `stats` declared correctly |
+| `showPage(pageName)` — SPA show/hide navigation function | ✅ | `querySelectorAll` + `forEach` hide-all, `getElementById(pageName)` show-one |
+| Page loader stubs (`loadDashboard`, `loadApplications`, `loadStudyLogs`) | ✅ | Written as async stubs with `console.log` — to be built Days 9-11 |
+| `DOMContentLoaded` event listener to initialise with dashboard | ✅ | Understood why it is needed (DOM not available before HTML is parsed) |
+| Wire `<script>` tags in `public/index.html` (correct order) | ✅ | `api.js` before `app.js` — student initially reasoned in reverse; understood dependency rule after explanation |
+| Browser test: nav clicks switch pages correctly | ✅ | All 3 sections switch cleanly; console logs confirm loaders fire |
+| Browser test: `await getStats()` and `await getApplications()` from console | ✅ | Live DB data returned correctly — stats and 2 application rows verified |
+| Git commit + push to GitHub | ✅ | Commit `5d5caf7` — 3 files changed, 322 insertions |
+
+#### Files Created / Modified
+
+- `public/js/api.js` — **[NEW]** 14 async `fetch()` wrapper functions (1 per API endpoint), `BASE_URL` constant, `URLSearchParams` for filtered GETs, `try/catch` in every function
+- `public/js/app.js` — **[NEW]** 4 state variables, 3 page-loader stubs, `showPage(pageName)`, `DOMContentLoaded` initialisation
+- `public/index.html` — **[MODIFIED]** Added `<script src="./js/api.js">` and `<script src="./js/app.js">` before `</body>`
+
+#### Final File State
+
+**`public/js/api.js` — 14 functions (grouped by resource):**
+```js
+const BASE_URL = '/api/v1';
+
+// Applications (5)
+async function getApplication(id) { ... }
+async function createApplication(data) { ... }
+async function updateApplication(id, data) { ... }
+async function deleteApplication(id) { ... }
+async function getApplications(filters) {
+    let url = `${BASE_URL}/applications`;
+    if (filters) {
+        const query = new URLSearchParams(filters).toString();
+        if (query) { url += `?${query}`; }
+    }
+    ...
+}
+
+// Interview Notes (4)
+async function getNotesByApplication(applicationId) { ... }
+async function createNote(applicationId, data) { ... }
+async function updateNote(id, data) { ... }
+async function deleteNote(noteId) { ... }
+
+// Study Logs (4)
+async function getStudyLogs(filters) { ... }
+async function createStudyLog(data) { ... }
+async function updateStudyLog(id, data) { ... }
+async function deleteStudyLog(id) { ... }
+
+// Stats (1)
+async function getStats() { ... }
+```
+
+**`public/js/app.js`:**
+```js
+let currentPage = 'dashboard';
+let applications = [];
+let studylogs = [];
+let stats = null;
+
+async function loadDashboard() { console.log("Loading Dashboard..."); }
+async function loadApplications() { console.log("Loading Applications..."); }
+async function loadStudyLogs() { console.log("Loading Study Logs...."); }
+
+function showPage(pageName) {
+    const sections = document.querySelectorAll('main section');
+    sections.forEach(item => { item.style.display = 'none' });
+    const activePage = document.getElementById(pageName);
+    if (activePage) { activePage.style.display = 'block'; }
+    currentPage = pageName;
+    if (pageName === 'dashboard') loadDashboard();
+    else if (pageName === 'applications') loadApplications();
+    else if (pageName === 'studylog') loadStudyLogs();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    showPage('dashboard');
+});
+```
+
+#### Key Concepts Learned
+
+| Concept | Understood? | Notes |
+|---|---|---|
+| `fetch()` GET pattern (no options object) | ✅ | Simple `fetch(url)` → `res.ok` check → `await res.json()` |
+| `fetch()` POST/PUT pattern | ✅ | `method`, `headers: { 'Content-Type': 'application/json' }`, `body: JSON.stringify(data)` |
+| `fetch()` DELETE pattern | ✅ | `method: 'DELETE'` only — no `body`, no `Content-Type` header needed |
+| `URLSearchParams` | ✅ | Converts a plain JS object `{ status: 'Applied' }` to `"status=Applied"` safely with URL encoding |
+| Truthy/falsy check on empty string | ✅ | `if (query)` guards against appending `?` when `URLSearchParams({})` returns `""` |
+| Browser vs Node.js environments | ✅ | `document` doesn't exist in Node.js — learned this by attempting `node app.js` (got `ReferenceError: document is not defined`) |
+| `querySelectorAll` returns a NodeList | ✅ | "Array of live DOM element objects" — each object has `.style`, `.id`, etc. |
+| SPA show/hide navigation | ✅ | `forEach` to hide all, `getElementById(pageName)` to show one |
+| `document.getElementById(pageName)` — dynamic lookup | ✅ | Understood that `pageName` string must match the HTML `id` attribute exactly |
+| `DOMContentLoaded` event | ✅ | "Wait until all HTML tags are in memory before running JS that touches the DOM" |
+| Script loading order — the Dependency Rule | ✅ | Toolmaker (`api.js`) must load before the person who uses tools (`app.js`). Initially intuited the opposite — understood the constraint clearly after explanation |
+| `currentPage` state tracking | ✅ | Must store the string name `pageName`, not the DOM element `activePage` |
+
+#### Errors Made (Learning Points)
+
+| Error | Root Cause | Self-Fixed? |
+|---|---|---|
+| `Content-Type` header on `deleteApplication` | DELETE has no body — `Content-Type` is meaningless without a payload | ✅ Yes, on explanation |
+| Missing semicolon on `return await res.json()` in `deleteApplication` | Syntax inconsistency | ✅ Yes |
+| Space in URL: `` url += ` ?${query}` `` (space before `?`) | Typo inside template literal — space encodes to `%20` and breaks route | ✅ Yes, on tutor flag |
+| `createNote`: used `${id}` instead of `${applicationId}` in URL | Parameter name mismatch — function param was `applicationId` not `id` | ❌ Caught by tutor |
+| `createNote`: `data: JSON.stringify(data)` instead of `body:` | Confused `fetch` API with Axios (which uses `data:`). Native `fetch` uses `body:` | ❌ Caught by tutor |
+| `updateNote`: `data: JSON.stringify(date)` — two bugs in one line | Both wrong key (`data` vs `body`) and typo in arg name (`date` vs `data`) | ❌ Caught by tutor |
+| `getStudyLogs`: `.toString` without `()` | Referenced function definition instead of calling it — `query` held a function object, not a string | ❌ Caught by tutor (self-fixed after hint) |
+| `getStudyLogs`: `fetch()` placed inside `if (filters)` block | Structural error — if no filters passed, function would return `undefined` with no network request | ❌ Caught by tutor (self-fixed after hint) |
+| `showPage(dashboard)` — parameter hardcoded as `dashboard` | Named parameter `dashboard` instead of generic `pageName`; hardcoded `getElementById('dashboard')` too — would always show dashboard regardless of which link was clicked | ❌ Caught by tutor (self-fixed on explanation) |
+| `currentPage = activePage` instead of `currentPage = pageName` | Stored the DOM element object instead of the string name into state | ❌ Caught by tutor, self-fixed |
+| `node app.js` in terminal | Tried to run browser-targeted JS in Node.js — `document is not defined` | 💡 Key learning moment — understood Browser vs Node distinction clearly |
+
+#### Assessment
+- **Verdict:** Productive session with a higher error count than Day 7 (expected — this was entirely new territory: native `fetch` API, DOM manipulation, and SPA architecture). All errors were logical and pattern-based, not careless. Student self-corrected or understood fixes immediately on explanation.
+- **Strongest area:** Architectural understanding — immediately grasped the 3-file separation, independently asked the right question about what form `filters` would take, and correctly explained the Browser vs Node environment distinction after encountering it live.
+- **Watch area for Day 9:** `fetch` vs Axios `body`/`data` confusion may resurface. Reinforce `body:` is the native fetch key. Also watch for DOM rendering patterns — student will be building `innerHTML` templates and DOM insertion for the first time.
+
+#### Tutor Notes for Day 9
+- Open Day 9 by connecting the architecture to the UI: "Yesterday we built the invisible engine. Today we make it visible — the Dashboard page. `loadDashboard()` will go from `console.log` to rendering real stat cards, a Chart.js bar chart, pending follow-ups, and a recent activity list."
+- Agenda: Wire `loadDashboard()` to call `getStats()` → render 4 stat cards (total, response rate, interview rate, offer rate) → include Chart.js via CDN → render status distribution bar chart → render `pendingFollowUps` list → render recent activity timeline (derived from `applications` sorted by `updated_at`) → style with CSS Grid for the card layout.
+- Key new concepts for Day 9: DOM creation with `innerHTML` template literals, `Chart.js` CDN inclusion and `new Chart(ctx, config)`, CSS Grid for card layout, color-coded status badges.
+- Student will want to jump straight into making it look beautiful. Let him move fast — he has earned it after 2 days of invisible plumbing.
+- The `loadDashboard()` stub in `app.js` is the entry point — build outward from there.
+- Remind him that `getStats()` already works (he verified it from the browser console yesterday). Day 9 is purely about rendering that data into the DOM.
 
 ---
 
@@ -646,5 +780,5 @@ CREATE TABLE study_logs(
 
 ---
 
-*Last updated: 2026-09-01 | End of Day 7*
+*Last updated: 2026-09-02 | End of Day 8*
 
