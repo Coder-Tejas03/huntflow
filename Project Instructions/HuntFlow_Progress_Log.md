@@ -39,7 +39,7 @@
 | Day 6 | Interview Notes + Study Logs API | 4 more endpoints, foreign keys in practice | ✅ COMPLETE |
 | Day 7 | Stats Endpoint | `COUNT`, `GROUP BY`, `LEFT JOIN`, stats formula queries | ✅ COMPLETE |
 | Day 8 | Frontend Architecture | `api.js` fetch wrappers, SPA navigation, `app.js` state | ✅ COMPLETE |
-| Day 9 | Dashboard Page | Stat cards, Chart.js bar chart, follow-up list, activity timeline | ⬜ |
+| Day 9 | Dashboard Page | Stat cards, Chart.js bar chart, follow-up list, activity timeline | ✅ COMPLETE |
 | Day 10 | Applications Page | List, add, edit, delete, filter, search, follow-up badge | ⬜ |
 | Day 11 | Study Log + Interview Notes + Polish | Study log page, notes in detail view, empty/loading states, responsive | ⬜ |
 | Day 12 | Testing + Deployment | End-to-end test, Render.com deploy, README, final push | ⬜ |
@@ -50,34 +50,37 @@
 
 > This section describes Tejas as he actually is, not as he was described at the start. Update after each day.
 
-**Last updated:** End of Day 5 (2026-08-31)
+**Last updated:** End of Day 9 (2026-09-03)
 
 ### Identity
 - **Name:** Tejas Gosavi
 - **OS:** Ubuntu 24.04.4 LTS
-- **Learning style:** Builds real things, understands best when he can run code and see output. Very self-driven — iterates on his own without being pushed.
+- **Learning style:** Builds real things, understands best when he can run code and see output. Very self-driven — iterates on his own without being pushed. Strong preference for hybrid development loop (feature logic -> styling & visual check -> next feature).
 
-### Skill Assessment (Updated After Day 5)
+### Skill Assessment (Updated After Day 9)
 
-| Skill | Pre-Day-1 Assessment | Post-Day-5 Reality |
+| Skill | Pre-Day-1 Assessment | Post-Day-9 Reality |
 |---|---|---|
 | `let`/`const`/`var` | Rusty | **Solid.** Understood immediately, applied correctly. |
 | Arrow functions | Rusty | **Solid.** Got implicit return, single-param shorthand. |
-| Template literals | Rusty | **Solid.** Mastered dynamic string building and SQL ILIKE interpolation (`%${search}%`). |
-| Objects + destructuring | Rusty | **Strong.** Destructures `req.params`, `req.query`, and `req.body` effortlessly. |
-| Array methods (`map/filter/reduce/find/forEach`) | Needed revision | **Strong.** All 5 correct on first attempt after seeing syntax. Invented `filter().map()` chaining independently. |
-| Method chaining | Unknown | **Surprising strength.** Asked the right question and solved it himself. |
-| `async`/`await` + `fetch()` | Conceptual, no practice | **Good.** Correct structure, double-await, try/catch included. |
-| Self-debugging | Unknown | **Exceptional.** Self-isolated and resolved typos in SQL function names, route parameter prefixes (`/:id`), and dynamic template strings. |
-| SQL & Schema Design | Has written JOINs before | **Solid.** Grasped DB vs Table mental models, primary/foreign keys, `ON DELETE CASCADE` (no orphan records), `CHECK` constraints, and all CRUD operations (`INSERT ... RETURNING *`, `SELECT` with `WHERE/ORDER BY/LIMIT`, `UPDATE` with `COALESCE`, `DELETE`). |
-| Node.js / Express & REST APIs | Not started | **Strong.** Modular architecture (`routes/` + `controllers/` + `config/`), `express.json()` middleware, request parsing (`req.query`, `req.params`, `req.body`), HTTP status codes (`200`, `201`, `400`, `404`, `500`), and dynamic parameterized query construction. |
+| Template literals | Rusty | **Mastered.** Used seamlessly for dynamic SQL, URLs, and multi-line HTML DOM injection. |
+| Objects + destructuring | Rusty | **Strong.** Destructures API payloads, config options, and parameters effortlessly. |
+| Array methods (`map/filter/reduce/find/forEach`) | Needed revision | **Strong.** Regularly uses `.map()` for data transformations and `.map().join('')` for DOM rendering. |
+| Method chaining | Unknown | **Surprising strength.** Chains array methods cleanly. |
+| `async`/`await` + `fetch()` | Conceptual, no practice | **Solid.** Wrote complete `api.js` wrapper suite and async page loaders with error handling. |
+| Self-debugging | Unknown | **Exceptional.** Quickly isolates missing state prefixes, object property mismatches, and CSS layout constraints with targeted hints. |
+| SQL & Schema Design | Has written JOINs before | **Solid.** Grasped DB vs Table mental models, primary/foreign keys, `ON DELETE CASCADE`, aggregations, anti-joins, and all CRUD operations. |
+| Node.js / Express & REST APIs | Not started | **Strong.** Complete backend built across routes, controllers, and database config for all 14 endpoints. |
+| DOM Rendering & Manipulation | Not started | **Strong.** Uses `document.getElementById`, defensive null checks, dynamic template literals, and `.map().join('')` for list rendering. |
+| CSS Grid & UI Styling | Not started | **Strong.** Confident with 2D grid systems (`repeat(4, 1fr)`, `repeat(3, 1fr)`, `3fr 2fr` split), card layouts, status borders, and responsive design (`@media (max-width: 900px)`). |
+| External Libraries (Chart.js) | Not started | **Solid.** Grasped `<canvas>` 2D context, options customization (`maxBarThickness`, `suggestedMax`, hiding legends), and SPA instance lifecycle management (`chart.destroy()`). |
 
 ### Behavioral Patterns (Observed)
 - ✅ **Deep architectural curiosity** — Traced the complete lifecycle of request data across 5 distinct scenarios and deduced dynamic query building array mechanics independently.
 - ✅ **Self-corrects before asking** — rarely waits for help, tries things first, and inspects error stacks/terminal headers.
-- ✅ **Asks curious "what if" questions** — e.g. questioned SQL semicolon rules, missing record return shapes, and array counter mechanics.
-- ✅ **Archives & tests thoroughly** — rigorously tests both happy paths and edge cases (400 validation, 404 missing ID).
-- ⚠️ **Route parameter prefix watch** — remember Express route params require leading colon (`/:id`).
+- ✅ **Asks curious "what if" questions** — deduced how Chart.js calculates category slot spacing across wide canvases and questioned how to optimize bar density and alignment.
+- ✅ **Thrives on visual feedback** — coined the "hybrid path" (logic -> styling -> verify in browser -> next feature), keeping energy and momentum high.
+- ⚠️ **Careful with scope prefixes** — watch out for passing raw variable names vs object properties (e.g. `stats.byStatus` vs `byStatus`).
 
 ### Teaching Calibration (Agent: read this before planning your session)
 - **Pace:** Faster than the plan assumed. Day 1 content absorbed in ~1 working session. Do not slow down unnecessarily.
@@ -756,9 +759,66 @@ document.addEventListener('DOMContentLoaded', () => {
 
 ---
 
-### ⬜ DAY 9 — 2026-09-05 | Dashboard Page
+### ✅ DAY 9 — 2026-09-02/03 | Dashboard Page
 
-> **To be filled at end of Day 9.**
+**Duration:** ~3 hours (hybrid feature-by-feature workflow)
+**Focus:** Building the complete interactive Dashboard page. Rendered dynamic stat cards, rate cards, integrated Chart.js bar chart on canvas, rendered pending follow-up cards with empty states, built recent activity timeline, and designed responsive 2-column layout in CSS Grid.
+
+#### Goals vs Achieved
+
+| Goal | Achieved? | Notes |
+|---|---|---|
+| Chart.js CDN inclusion in `index.html` | ✅ | Imported in `<head>` to make `Chart` global available |
+| Dashboard container hooks in `index.html` | ✅ | Semantic placeholders (`#stat-cards`, `#rate-cards`, `.chart-wrapper`, `#pending-followups`, `#recent-activity`) |
+| `renderStatCards(overview)` | ✅ | Injected 4 cards (`total`, `active`, `offers`, `rejected`) via template literals |
+| CSS Grid styling for stat cards | ✅ | `repeat(4, 1fr)` grid with colored top accent borders |
+| `renderRateCards(rates)` | ✅ | Rendered percentage metrics (`responseRate`, `interviewRate`, `offerRate`) with subtitles |
+| CSS Grid styling for rate cards | ✅ | `repeat(3, 1fr)` grid with colored left accent borders |
+| `renderStatusChart(byStatus)` | ✅ | Initialized `new Chart(ctx, config)` with bar chart type |
+| Chart.js lifecycle management | ✅ | Added `statusChartInstance.destroy()` to prevent canvas reuse error on SPA navigation |
+| Chart.js layout tuning | ✅ | Added `maxBarThickness: 48`, `suggestedMax: 4`, and hid redundant legend for professional look |
+| Middle 2-column grid (`.dashboard-columns`) | ✅ | `3fr 2fr` split (chart + follow-ups) that fixed chart bar spacing on desktop |
+| `renderPendingFollowUps(pendingFollowUps)` | ✅ | Handled empty state and rendered application items with status badges |
+| `renderRecentActivity(applications)` | ✅ | Handled empty state and rendered latest applications feed |
+| Timeline CSS styling | ✅ | Styled `.activity-item` with accent dots, company details, and date formatting |
+| Git commit + push to GitHub | ✅ | Commit `e2bca04` pushed to `origin/main` |
+
+#### Files Created / Modified
+
+- `public/index.html` — Added Chart.js CDN, structured `#dashboard` section with `.dashboard-columns`, `.dashboard-card`, canvas wrapper, and activity feed containers
+- `public/js/app.js` — Updated `loadDashboard()` to fetch `stats` and `applications`, added 4 helper render functions (`renderStatCards`, `renderRateCards`, `renderStatusChart`, `renderPendingFollowUps`, `renderRecentActivity`), and tracked `statusChartInstance`
+- `public/css/style.css` — Added CSS Grid layouts (`#stat-cards`, `#rate-cards`, `.dashboard-columns`), card styles (`.stat-card`, `.rate-card`, `.dashboard-card`), `.chart-wrapper` height constraint, badges (`.badge`, `.badge-warning`), empty states, and activity timeline rules
+
+#### Key Concepts Learned
+
+| Concept | Understood? | Notes |
+|---|---|---|
+| DOM Injection with `innerHTML` | ✅ | Mental model of "picture frame": target element (`getElementById`) -> template string (`` ` ``) -> inject (`innerHTML`) |
+| Defensive DOM programming | ✅ | Guarding with `if (!container || !data) return;` prevents browser runtime exceptions |
+| The Array-to-HTML Pattern | ✅ | `.map(item => \`...\`).join('')` to transform object arrays into concatenated HTML strings without commas |
+| CSS Grid 2D layout | ✅ | `repeat(N, 1fr)` for equal distribution, and proportional splits (`3fr 2fr`) for dashboard widgets |
+| HTML `<canvas>` & Chart.js | ✅ | `<canvas>` is a blank whiteboard; Chart.js is the artist; requires 2D context (`getContext('2d')`) |
+| Chart.js Lifecycle in SPAs | ✅ | `chartInstance.destroy()` must be called before re-initializing on an existing canvas to avoid reuse errors |
+| Chart.js Geometry & Bar Sizing | ✅ | Learned why sparse categories stretch across wide canvases; controlled with `maxBarThickness` and multi-column wrappers |
+| Responsive Media Queries | ✅ | Collapsing multi-column dashboard grids to single-column (`1fr`) on tablet/mobile viewports (`@media (max-width: 900px)`) |
+
+#### Errors Made (Learning Points)
+
+| Error | Root Cause | Self-Fixed? |
+|---|---|---|
+| `renderStatusChart(byStatus)` | Passed undeclared variable `byStatus` instead of `stats.byStatus` inside `loadDashboard()` | ✅ Self-fixed on tutor prompt |
+| `item.counts` in `.map()` | Property name mismatch (DB returns singular `count`, not plural `counts`) | ✅ Self-fixed on tutor prompt |
+| Chart height 0px (invisible chart) | Missing CSS height on `.chart-wrapper` with `maintainAspectRatio: false` | ✅ Fixed by adding `height: 300px` |
+| `${app.company_name}` before `.map()` | Referenced loop variable `app` directly inside template string without mapping over `pendingFollowUps` array | ✅ Self-fixed on tutor prompt |
+
+#### Assessment
+- **Verdict:** Outstanding session. The dashboard is fully functional, aesthetically clean, and connected to live database queries. Student embraced the "hybrid path" (logic -> CSS styling -> browser verification) and demonstrated strong attention to visual design details.
+- **Strongest area:** Architectural intuition — quickly reasoned through why category bars were spaced far apart and mastered the `.map().join('')` DOM rendering pattern.
+- **Watch area for Day 10:** Applications page involves full interactive forms (event listeners, `e.preventDefault()`, modal/section toggles, form payload extraction). Reinforce form submission mechanics.
+
+#### Tutor Notes for Day 10
+- Open Day 10 by bridging: "Yesterday you built the read-only command center. Today we build the core CRUD engine for applications — the Applications page where you can view all applications in a filterable table, search by company/role, add new applications via a form, edit status, and delete records."
+- Agenda: Build table view with `getApplications()` → add status & platform dropdown filters + search input → build Add Application form (`createApplication`) → build quick status update / delete actions → test full CRUD loop in browser.
 
 ---
 
@@ -780,5 +840,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 ---
 
-*Last updated: 2026-09-02 | End of Day 8*
+*Last updated: 2026-09-03 | End of Day 9*
 
