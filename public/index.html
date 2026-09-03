@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HuntFlow</title>
     <link rel="stylesheet" href="./css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
 <body>
@@ -27,7 +29,29 @@
     <main>
         <section id="dashboard">
             <h2>Dashboard</h2>
-            <p>Stats go here...</p>
+            <div id="stat-cards"></div>
+            <div id="rate-cards"></div>
+            <div class="dashboard-columns">
+                <!-- col 1: Chart -->
+                <div class="dashboard-card chart-card">
+                    <h3>Applications by Status</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="status-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- col 2: Pending follow ups -->
+                <div class="dashboard-card followup-card">
+                    <h3>Pending Follow-ups (>7 days)</h3>
+                    <div id="pending-followups" class="followup-list"></div>
+                </div>
+            </div>
+
+
+            <div class="dashboard-card activity-card">
+                <h3>Recent Activity</h3>
+                <div id="recent-activity" class="activity-timeline"></div>
+            </div>
         </section>
 
         <section id="applications">
