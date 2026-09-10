@@ -40,8 +40,8 @@
 | Day 7 | Stats Endpoint | `COUNT`, `GROUP BY`, `LEFT JOIN`, stats formula queries | ✅ COMPLETE |
 | Day 8 | Frontend Architecture | `api.js` fetch wrappers, SPA navigation, `app.js` state | ✅ COMPLETE |
 | Day 9 | Dashboard Page | Stat cards, Chart.js bar chart, follow-up list, activity timeline | ✅ COMPLETE |
-| Day 10 | Applications Page | List, add, edit, delete, filter, search, follow-up badge | ⬜ |
-| Day 11 | Study Log + Interview Notes + Polish | Study log page, notes in detail view, empty/loading states, responsive | ⬜ |
+| Day 10 | Applications Page | List, add, edit, delete, filter, search, follow-up badge | ✅ COMPLETE |
+| Day 11 | Study Log + Interview Notes + Polish | Study log page, notes in detail view, empty/loading states, responsive, visual modernization | ✅ COMPLETE |
 | Day 12 | Testing + Deployment | End-to-end test, Render.com deploy, README, final push | ⬜ |
 
 ---
@@ -822,23 +822,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
 ---
 
-### ⬜ DAY 10 — 2026-09-06 | Applications Page
+### ✅ DAY 10 — 2026-09-06 | Applications Page
+**Focus:** Building the core CRUD engine for applications. Filterable table, search by company/role, status & platform dropdown filters, follow-up badge logic (>7 days, Applied), Add/Edit application form with input pre-filling, and delete with cascade confirmation.
 
-> **To be filled at end of Day 10.**
+#### Goals vs Achieved
+| Goal | Achieved? | Notes |
+|---|---|---|
+| Applications table markup & CSS | ✅ | Clean table layout, platform tags, status badges |
+| Dynamic table rendering (`renderApplicationsTable`) | ✅ | Rendered real PostgreSQL data with `.map().join('')` |
+| Search & status/platform filters (`applyFilters`, `clearFilters`) | ✅ | Integrated `URLSearchParams` filters with backend |
+| Follow-up badge calculation (`needsFollowUp`) | ✅ | Automated check: `status === 'Applied'` and `diffDays > 7` |
+| Add & Edit form panel (`showAddForm`, `hideForm`, `handleEdit`) | ✅ | Mode toggling, input pre-filling, smooth scroll |
+| Form submission handler (`initAppForm`) | ✅ | Branches between `createApplication` and `updateApplication` |
+| Delete confirmation & action (`handleDelete`) | ✅ | Confirm prompt with cascade warning + view reload |
 
 ---
 
-### ⬜ DAY 11 — 2026-09-07 | Study Log + Interview Notes + Polish
+### ✅ DAY 11 — 2026-09-10 | Study Log, Interview Notes & 2026 UI/UX Redesign
+**Focus:** Building the Study Log page, Application Detail modal with Interview Notes, responsive mobile card transformation, and full design modernization to Sept 2026 standards.
 
-> **To be filled at end of Day 11.**
+#### Goals vs Achieved
+| Goal | Achieved? | Notes |
+|---|---|---|
+| Application Detail Modal (`#app-detail-modal`) | ✅ | Backdrop blur, auto-fit metadata grid, smooth animation |
+| Modal dismissals | ✅ | Close button, backdrop click, and `Escape` key listeners |
+| Interview Notes loading & rendering (`getNotesByApplication`) | ✅ | Displayed round notes with questions, answers, revision points |
+| Add & Delete Interview Notes (`createNote`, `deleteNote`) | ✅ | Collapsible round sub-form and delete note actions |
+| Study Log Page HTML & CSS (`#studylog`) | ✅ | Summary stats grid, custom slider, log cards feed |
+| Study Stats calculation (`renderStudyLogStats`) | ✅ | Total hours, unique active days, average hours per active day |
+| Consecutive Day Streak Algorithm (`calculateStreak`) | ✅ | Automatically computes active streak from today/yesterday backwards |
+| Interactive Confidence Slider (1–5) | ✅ | Custom gradient track + thumb with live readout badges |
+| Study Log CRUD (`createStudyLog`, `updateStudyLog`, `deleteStudyLog`) | ✅ | Complete creation, pre-filled editing, and deletion |
+| Dual Typography Integration | ✅ | `Plus Jakarta Sans` for UI + `JetBrains Mono` for tabular data |
+| Floating Frosted-Glass Navigation | ✅ | Sticky navbar, gradient logo mark, PRO badge, pill segment controls |
+| Mobile-First Ergonomics (< 768px) | ✅ | Table auto-transforms to mobile job cards; modals become native bottom sheets |
+| Modernized Chart.js Styling | ✅ | Rounded bars, Plus Jakarta Sans axes, dark tooltips |
 
 ---
 
-### ⬜ DAY 12 — 2026-09-08 | Testing + Deployment
+### ⬜ DAY 12 — 2026-09-11 | Testing + Deployment
 
 > **To be filled at end of Day 12.**
 
 ---
 
-*Last updated: 2026-09-03 | End of Day 9*
+*Last updated: 2026-09-10 | End of Day 11*
+
 

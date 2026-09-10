@@ -4,27 +4,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HuntFlow</title>
+    <title>HuntFlow — Job Hunt Command Center</title>
+
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="./css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 </head>
 
 <body>
-    <nav>
-        <h1>HuntFlow</h1>
-        <ul>
-            <li>
-                <a href="#" onclick="showPage('dashboard')">Dashboard</a>
-            </li>
-            <li>
-                <a href="#" onclick="showPage('applications')">Applications</a>
-            </li>
-            <li>
-                <a href="#" onclick="showPage('studylog')">Study Log</a>
-            </li>
-        </ul>
-    </nav>
+    <header class="navbar-wrapper">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <div class="brand-logo">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                    </svg>
+                </div>
+                <span class="brand-name">HuntFlow</span>
+                <span class="brand-badge">PRO</span>
+            </div>
+            <ul class="nav-pill-track">
+                <li>
+                    <a href="javascript:void(0)" onclick="showPage('dashboard')" class="nav-pill active">Dashboard</a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" onclick="showPage('applications')" class="nav-pill">Applications</a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" onclick="showPage('studylog')" class="nav-pill">Study Log</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
 
     <main>
         <section id="dashboard">
@@ -55,13 +71,294 @@
         </section>
 
         <section id="applications">
-            <h2>Applications</h2>
-            <p>Applications list goes here...</p>
+            <!-- 1. Header Bar -->
+            <div class="page-header">
+                <h2>Applications</h2>
+                <button id="btn-add-app" class="btn btn-primary" onclick="showAddForm()">+ Add Application</button>
+            </div>
+
+            <!-- 2. Search & Filter Bar -->
+            <div class="filter-bar">
+                <input type="text" id="search-input" placeholder="Search company or role..." oninput="applyFilters()">
+
+                <select id="filter-status" onchange="applyFilters()">
+                    <option value="">All Statuses</option>
+                    <option value="Applied">Applied</option>
+                    <option value="Online Assessment">Online Assessment</option>
+                    <option value="Mock Interview">Mock Interview</option>
+                    <option value="Interview Round 1">Interview Round 1</option>
+                    <option value="Interview Round 2">Interview Round 2</option>
+                    <option value="Interview Round 3">Interview Round 3</option>
+                    <option value="Offer">Offer</option>
+                    <option value="Rejected">Rejected</option>
+                    <option value="Withdrawn">Withdrawn</option>
+                </select>
+
+                <select id="filter-platform" onchange="applyFilters()">
+                    <option value="">All Platforms</option>
+                    <option value="LinkedIn">LinkedIn</option>
+                    <option value="Naukri">Naukri</option>
+                    <option value="Wellfound">Wellfound</option>
+                    <option value="Instahyre">Instahyre</option>
+                    <option value="Company Website">Company Website</option>
+                    <option value="Referral">Referral</option>
+                    <option value="NxtWave">NxtWave</option>
+                    <option value="Indeed">Indeed</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <button class="btn btn-secondary" onclick="clearFilters()">Clear</button>
+            </div>
+
+            <!-- 3. Add / Edit Form Panel (Hidden by default) -->
+            <div id="app-form-panel" class="form-panel" style="display: none;">
+                <h3 id="form-title">Add New Application</h3>
+                <form id="app-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="company-name">Company Name *</label>
+                            <input type="text" id="company-name" required placeholder="e.g. Google">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="role">Role / Position *</label>
+                            <input type="text" id="role" required placeholder="e.g. Full Stack Developer">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="platform">Platform *</label>
+                            <select id="platform" required>
+                                <option value="LinkedIn">LinkedIn</option>
+                                <option value="Naukri">Naukri</option>
+                                <option value="Wellfound">Wellfound</option>
+                                <option value="Instahyre">Instahyre</option>
+                                <option value="Company Website">Company Website</option>
+                                <option value="Referral">Referral</option>
+                                <option value="NxtWave">NxtWave</option>
+                                <option value="Indeed">Indeed</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="job-link">Job Link</label>
+                            <input type="url" id="job-link" placeholder="https://...">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="date-applied">Date Applied *</label>
+                            <input type="date" id="date-applied" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="status">Status *</label>
+                            <select id="status" required>
+                                <option value="Applied">Applied</option>
+                                <option value="Online Assessment">Online Assessment</option>
+                                <option value="Mock Interview">Mock Interview</option>
+                                <option value="Interview Round 1">Interview Round 1</option>
+                                <option value="Interview Round 2">Interview Round 2</option>
+                                <option value="Interview Round 3">Interview Round 3</option>
+                                <option value="Offer">Offer</option>
+                                <option value="Rejected">Rejected</option>
+                                <option value="Withdrawn">Withdrawn</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="salary-offered">Salary / CTC Offered</label>
+                            <input type="text" id="salary-offered" placeholder="e.g. ₹12 LPA (optional)">
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="notes">Notes</label>
+                        <textarea id="notes" rows="3"
+                            placeholder="Key requirements, referral contacts, etc..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="btn-save-app">Save Application</button>
+                        <button type="button" class="btn btn-secondary" onclick="hideForm()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 4. Applications Table Container -->
+            <div id="app-table-container"></div>
+
+            <!-- 5. Application Detail & Interview Notes Modal -->
+            <div id="app-detail-modal" class="modal-backdrop" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-drag-handle"></div>
+                    <div class="modal-header">
+                        <div>
+                            <h3 id="modal-app-company">Company Name</h3>
+                            <p id="modal-app-role">Role</p>
+                        </div>
+                        <div class="modal-header-right">
+                            <span id="modal-app-status" class="status-badge">Status</span>
+                            <button type="button" class="modal-close-btn" onclick="closeApplicationDetail()" aria-label="Close">&times;</button>
+                        </div>
+                    </div>
+
+                    <div class="modal-body">
+                        <!-- Application Metadata Summary -->
+                        <div class="app-meta-box">
+                            <div class="meta-item">
+                                <span class="meta-label">Platform</span>
+                                <span id="modal-app-platform" class="meta-value">-</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Applied Date</span>
+                                <span id="modal-app-date" class="meta-value">-</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Salary / CTC</span>
+                                <span id="modal-app-salary" class="meta-value">-</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Job Link</span>
+                                <span id="modal-app-link" class="meta-value">-</span>
+                            </div>
+                            <div class="meta-item full-width" id="modal-app-notes-row" style="display: none;">
+                                <span class="meta-label">General Notes</span>
+                                <p id="modal-app-notes" class="meta-value notes-text"></p>
+                            </div>
+                        </div>
+
+                        <!-- Interview Notes Section -->
+                        <div class="interview-notes-section">
+                            <div class="notes-header">
+                                <h4>Interview Rounds & Notes</h4>
+                                <button type="button" class="btn-sm btn-primary" onclick="showAddNoteForm()">+ Add Round Note</button>
+                            </div>
+
+                            <!-- Add Note Form Panel (Collapsible) -->
+                            <div id="note-form-panel" class="sub-form-panel" style="display: none;">
+                                <h5 id="note-form-title">Record Interview Round</h5>
+                                <form id="interview-note-form">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label for="note-round">Round Number *</label>
+                                            <input type="number" id="note-round" min="1" max="10" required placeholder="1">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="note-date">Interview Date</label>
+                                            <input type="date" id="note-date">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="note-assessment">How it went</label>
+                                            <input type="text" id="note-assessment" placeholder="e.g. Great discussion / Tough DSA">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group full-width">
+                                        <label for="note-questions">Questions Asked *</label>
+                                        <textarea id="note-questions" rows="2" required placeholder="What questions, coding challenges, or topics were covered?"></textarea>
+                                    </div>
+
+                                    <div class="form-group full-width">
+                                        <label for="note-answers">My Answers / Approach</label>
+                                        <textarea id="note-answers" rows="2" placeholder="How did you solve it or approach the answer?"></textarea>
+                                    </div>
+
+                                    <div class="form-group full-width">
+                                        <label for="note-revise">Topics to Revise</label>
+                                        <textarea id="note-revise" rows="2" placeholder="Key topics or weak spots to review for subsequent rounds..."></textarea>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary btn-sm" id="btn-save-note">Save Note</button>
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="hideAddNoteForm()">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Notes List Container -->
+                            <div id="notes-list-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
+        <!-- ===================================================================
+             STUDY LOG SECTION
+             =================================================================== -->
         <section id="studylog">
-            <h2>Study Log</h2>
-            <p>Study sessions go here...</p>
+            <div class="page-header">
+                <h2>Study Log</h2>
+                <button id="btn-add-log" class="btn btn-primary" onclick="showAddStudyLogForm()">+ Add Entry</button>
+            </div>
+
+            <!-- 1. Study Log Stats Summary -->
+            <div id="studylog-stats" class="studylog-stats-grid">
+                <div class="study-stat-card total-hours">
+                    <span class="stat-label">Total Hours Studied</span>
+                    <span class="stat-value" id="stat-study-total">0.0</span>
+                    <span class="stat-sub">Across all logged sessions</span>
+                </div>
+                <div class="study-stat-card avg-hours">
+                    <span class="stat-label">Average / Active Day</span>
+                    <span class="stat-value" id="stat-study-avg">0.0</span>
+                    <span class="stat-sub">Hours per active day</span>
+                </div>
+                <div class="study-stat-card streak">
+                    <span class="stat-label">Current Streak</span>
+                    <span class="stat-value" id="stat-study-streak">0 days</span>
+                    <span class="stat-sub">Consecutive study days</span>
+                </div>
+            </div>
+
+            <!-- 2. Add / Edit Study Log Form Panel (Hidden by default) -->
+            <div id="studylog-form-panel" class="form-panel" style="display: none;">
+                <h3 id="studylog-form-title">Add Study Log Entry</h3>
+                <form id="studylog-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="log-topic">Topic *</label>
+                            <input type="text" id="log-topic" required placeholder="e.g. React hooks & useMemo">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="log-hours">Hours Spent *</label>
+                            <input type="number" id="log-hours" step="0.5" min="0.1" required placeholder="e.g. 2.5">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="log-date">Date *</label>
+                            <input type="date" id="log-date" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="log-project">Project Worked On</label>
+                            <input type="text" id="log-project" placeholder="e.g. HuntFlow">
+                        </div>
+                    </div>
+
+                    <div class="form-group slider-group full-width">
+                        <div class="slider-header">
+                            <label for="log-confidence">Confidence Level (1–5)</label>
+                            <span id="confidence-readout" class="confidence-badge">3 / 5 (Moderate)</span>
+                        </div>
+                        <input type="range" id="log-confidence" min="1" max="5" value="3" oninput="updateConfidenceReadout(this.value)">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="log-learned">What I Learned / Notes</label>
+                        <textarea id="log-learned" rows="3" placeholder="Key takeaways, concepts mastered, or tricky bugs resolved..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="btn-save-log">Save Entry</button>
+                        <button type="button" class="btn btn-secondary" onclick="hideAddStudyLogForm()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 3. Study Log Entries List Container -->
+            <div id="studylog-list-container"></div>
         </section>
     </main>
 
