@@ -2,9 +2,12 @@
   "name": "huntflow",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node test-e2e.js",
+    "db:init": "node db/migrate.js"
   },
   "repository": {
     "type": "git",

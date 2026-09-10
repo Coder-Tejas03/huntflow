@@ -42,7 +42,7 @@
 | Day 9 | Dashboard Page | Stat cards, Chart.js bar chart, follow-up list, activity timeline | ✅ COMPLETE |
 | Day 10 | Applications Page | List, add, edit, delete, filter, search, follow-up badge | ✅ COMPLETE |
 | Day 11 | Study Log + Interview Notes + Polish | Study log page, notes in detail view, empty/loading states, responsive, visual modernization | ✅ COMPLETE |
-| Day 12 | Testing + Deployment | End-to-end test, Render.com deploy, README, final push | ⬜ |
+| Day 12 | Testing + Deployment | End-to-end test, Render.com deploy, README, final push | ✅ COMPLETE |
 
 ---
 
@@ -860,12 +860,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
 ---
 
-### ⬜ DAY 12 — 2026-09-11 | Testing + Deployment
+### ✅ DAY 12 — 2026-09-10 | Testing, Polish, Render Deployment & v1.0 Launch
 
-> **To be filled at end of Day 12.**
+**Focus:** Complete end-to-end test automation, dynamic SSL cloud hardening, database migration automation, Render deployment guide & verification, portfolio-grade README.md, and final production release.
+
+#### Goals vs Achieved
+
+| Goal | Achieved? | Notes |
+|---|---|---|
+| `package.json` scripts (`start`, `dev`, `test`, `db:init`) | ✅ | Production entry point configured for cloud runtimes |
+| Dynamic PostgreSQL SSL Support in `src/config/db.js` | ✅ | Auto-detects cloud host vs localhost; prevents Render SSL handshake failures |
+| Automated Migration Script (`db/migrate.js`) | ✅ | One-command remote schema initialization via `npm run db:init` |
+| Comprehensive E2E Test Suite (`test-e2e.js`) | ✅ | 28/28 tests passing across all 14 REST endpoints with zero external dependencies |
+| Referential Integrity & Cascade Verification | ✅ | Verified deletion of parent application completely eliminates child notes (No Ghosts) |
+| UI/UX Verification on Desktop & Mobile | ✅ | Validated Chart.js recreation, modal dialogs, mobile card views (<768px) |
+| Compass SVG Favicon | ✅ | Added matching embedded SVG favicon to eliminate 404s |
+| Production Portfolio `README.md` | ✅ | Architecture mermaid diagrams, REST API specs, ERD, local setup, marathon story |
+| Render.com Deployment Workflow | ✅ | Cloud database provisioning & deployment guide finalized |
+| Final Git Release Tag `v1.0.0` | ✅ | HuntFlow v1.0 production release ready for deployment |
+
+#### Final Marathon Milestone Summary
+- **12 Days, 14 REST Endpoints, 3 Normalized Database Tables, 1 Production Full-Stack Application.**
+- Tejas has shipped HuntFlow as a fully functional, architecturally clean, and production-ready portfolio project!
 
 ---
 
-*Last updated: 2026-09-10 | End of Day 11*
+*Last updated: 2026-09-10 | End of Day 12 (Marathon Complete 🎉)*
 
 
